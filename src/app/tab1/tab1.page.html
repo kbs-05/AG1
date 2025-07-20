@@ -1,17 +1,676 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 1
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marché Agricole Connecté | Fermiers & Vendeurs</title>
+  
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.css">
+  
+  <!-- Ionic CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css"/>
+  
+  <style>
+    :root {
+      --primary: #1a731e;
+      --primary-dark: #145c18;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --ion-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      color: #333;
+    }
+    
+    .section-title {
+      position: relative;
+      margin-bottom: 2.5rem;
+      text-align: center;
+    }
+    
+    .section-title:after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 4px;
+      background: var(--primary);
+      margin: 15px auto 0;
+    }
+    
+    /* Hero Section - Modifié pour meilleure responsivité */
+    .hero-section {
+      background: url('/assets/AG2.jpg');
+      background-size: cover;
+      background-position: 12% 32%;
+      background-repeat: no-repeat;
+      min-height: 80vh;
+      width: 100%;
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 2rem;
+      position: relative;
+    }
+    
+    .hero-content {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 1rem;
+      text-align: center;
+    }
+    
+    .hero-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+    }
+    
+    .hero-title span {
+      color: #8bc34a;
+    }
+    
+    .hero-text {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+    
+    /* Stats Section */
+    .stats-section {
+      background-color: #1a731e;
+      color: white;
+      padding: 4rem 0;
+      text-align: center;
+    }
+    
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    
+    /* Categories Section */
+    .categories-section {
+      padding: 1rem 0;
+      background-color: #f8f9fa;
+    }
+    
+    .category-card {
+      border: none;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+      margin-bottom: 1.5rem;
+      background: white;
+      text-align: center;
+      padding: 2rem 1rem;
+      height: 100%;
+    }
+    
+    .category-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    .category-icon {
+      font-size: 2.5rem;
+      color: #1a731e;
+      margin-bottom: 1rem;
+    }
+    
+    /* Products Section */
+    .products-section {
+      padding: 5rem 0;
+    }
+    
+    .product-card {
+      border: none;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+      margin-bottom: 1.5rem;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    .product-img-container {
+      overflow: hidden;
+      position: relative;
+      height: 180px;
+    }
+    
+    .product-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    
+    .product-card:hover .product-img {
+      transform: scale(1.05);
+    }
+    
+    .product-info {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+    
+    .product-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #28a745;
+      color: white;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 0.8rem;
+      z-index: 1;
+    }
+    
+    .product-price {
+      font-weight: 700;
+      color: #1a731e;
+    }
+    
+    .product-old-price {
+      text-decoration: line-through;
+      color: #6c757d;
+      font-size: 0.9rem;
+    }
+    
+    .product-rating {
+      color: #ffc107;
+      font-size: 0.9rem;
+    }
+    
+    /* Barre de progression du stock */
+    .stock-progress {
+      height: 6px;
+      background-color: #e9ecef;
+      border-radius: 3px;
+      margin-bottom: 10px;
+      position: relative;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background-color: #28a745;
+      border-radius: 3px;
+    }
+    
+    .stock-info {
+      position: absolute;
+      right: 0;
+      top: 10px;
+      font-size: 0.7rem;
+      color: #6c757d;
+    }
+    
+    /* Info ventes */
+    .sales-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      margin-bottom: 10px;
+    }
+    
+    .sales-info .sold {
+      color: #6c757d;
+    }
+    
+    .sales-info .available {
+      color: #28a745;
+      font-weight: 500;
+    }
+    
+    /* CTA Section */
+    .cta-section {
+      padding: 5rem 0;
+      background-color: #1a731e;
+      color: white;
+      text-align: center;
+    }
+    
+    /* Footer */
+    .footer {
+      background-color: #1a1a1a;
+      color: white;
+      padding: 4rem 0 2rem;
+    }
+    
+    .footer-links h5 {
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+    }
+    
+    .footer-links ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    
+    .footer-links li {
+      margin-bottom: 0.8rem;
+    }
+    
+    .footer-links a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    
+    .footer-links a:hover {
+      color: white;
+    }
+    
+    .social-icons a {
+      color: white;
+      font-size: 1.2rem;
+      margin-right: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .social-icons a:hover {
+      color: #8bc34a;
+      transform: translateY(-3px);
+    }
+    
+    .copyright {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 2rem;
+      margin-top: 2rem;
+      text-align: center;
+    }
+    
+    /* Ionic overrides */
+    ion-toolbar {
+      --background: #1a731e;
+      --color: white;
+    }
+    
+    ion-button {
+      --border-radius: 8px;
+      --box-shadow: none;
+      text-transform: none;
+      font-weight: 500;
+    }
+    
+    ion-button[color="success"] {
+      --background: #28a745;
+      --background-hover: #218838;
+      --background-activated: #1e7e34;
+    }
+    
+    ion-button[color="light"] {
+      --color: #1a731e;
+      --border-color: #1a731e;
+      --border-width: 2px;
+    }
+    
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+    }
+    
+    /* Media Queries pour la responsivité */
+    @media (max-width: 768px) {
+      .hero-section {
+        min-height: 60vh;
+        padding: 1rem;
+      }
+      
+      .hero-title {
+        font-size: 2rem;
+      }
+      
+      .hero-text {
+        font-size: 1rem;
+      }
+      
+      .hero-content {
+        text-align: center;
+      }
+      
+      .stat-number {
+        font-size: 2rem;
+      }
+    }
+    
+    @media (min-width: 769px) {
+      .hero-content {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <ion-app>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-menu-button></ion-menu-button>
+        </ion-buttons>
+        <ion-title>
+          <ion-icon name="leaf" slot="start"></ion-icon> Agri-Gabon
+        </ion-title>
+        <ion-buttons slot="end">
+          <ion-button fill="clear" routerLink="/profil">
+            <ion-icon name="person" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 1</ion-title>
-    </ion-toolbar>
-  </ion-header>
+    <ion-content id="main-content">
+      <!-- Hero Section - Modifiée pour meilleure responsivité -->
+      <section class="hero-section">
+        <div class="hero-content">
+          <h1 class="hero-title">Connectez directement les <span>fermiers</span> et les <span>vendeurs</span></h1>
+          <p class="hero-text">Notre plateforme facilite les échanges entre producteurs agricoles et distributeurs pour une chaîne d'approvisionnement plus courte et plus transparente.</p>
+          
+        </div>
+      </section>
 
-  <app-explore-container name="Tab 1 page"></app-explore-container>
-</ion-content>
+      
+
+      <!-- Le reste de votre code reste inchangé... -->
+      <!-- Categories Section -->
+      <section class="categories-section">
+        <div class="container">
+          <h2 class="section-title">Nos Catégories</h2>
+          <p class="text-center mb-5">Découvrez nos différentes catégories de produits agricoles</p>
+          
+          <ion-grid>
+            <ion-row>
+              <ion-col size="12" size-sm="6" size-md="4" size-lg="3">
+                <div class="category-card" routerLink="/fruits">
+                  <div class="category-icon">
+                    <ion-icon name="nutrition"></ion-icon>
+                  </div>
+                  <h5>Fruits</h5>
+                  <p class="small text-muted">Produits frais de saison</p>
+                </div>
+              </ion-col>
+              
+              <ion-col size="12" size-sm="6" size-md="4" size-lg="3">
+                <div class="category-card" routerLink="/legumes">
+                  <div class="category-icon">
+                    <ion-icon name="leaf"></ion-icon>
+                  </div>
+                  <h5>Légumes</h5>
+                  <p class="small text-muted">Variétés locales et bio</p>
+                </div>
+              </ion-col>
+              
+              <ion-col size="12" size-sm="6" size-md="4" size-lg="3">
+                <div class="category-card" routerLink="/viande">
+                  <div class="category-icon">
+                    <ion-icon name="egg"></ion-icon>                  
+                  </div>
+                  <h5>Viandes</h5>
+                  <p class="small text-muted">Élevage traditionnel</p>
+                </div>
+              </ion-col>
+              
+              <ion-col size="12" size-sm="6" size-md="4" size-lg="3">
+                <div class="category-card" routerLink="/poisson">
+                  <div class="category-icon">
+                    <ion-icon name="fish"></ion-icon>
+                  </div>
+                  <h5>Poissons</h5>
+                  <p class="small text-muted">Pêché localement</p>
+                </div>
+              </ion-col>
+              
+              <ion-col size="12" size-sm="6" size-md="4" size-lg="3">
+                <div class="category-card" routerLink="/produits">
+                  <div class="category-icon">
+                    <ion-icon name="egg"></ion-icon>
+                  </div>
+                  <h5>Produits laitiers</h5>
+                  <p class="small text-muted">Lait, fromages, œufs</p>
+                </div>
+              </ion-col>
+              
+              <ion-col size="12" size-sm="6" size-md="4" size-lg="3">
+                <div class="category-card" routerLink="/cereales">
+                  <div class="category-icon">
+                    <ion-icon name="rose"></ion-icon>
+                  </div>
+                  <h5>Céréales</h5>
+                  <p class="small text-muted">Riz, maïs, millet</p>
+                </div>
+              </ion-col>
+              
+              <ion-col size="12" size-sm="6" size-md="4" size-lg="3">
+                <div class="category-card" routerLink="/epices">
+                  <div class="category-icon">
+                    <ion-icon name="flask"></ion-icon>
+                  </div>
+                  <h5>Épices</h5>
+                  <p class="small text-muted">Saveurs locales</p>
+                </div>
+              </ion-col>
+              
+              <ion-col size="12" size-sm="6" size-md="4" size-lg="3">
+                <div class="category-card" routerLink="/boissons">
+                  <div class="category-icon">
+                    <ion-icon name="wine"></ion-icon>
+                  </div>
+                  <h5>Boissons</h5>
+                  <p class="small text-muted">Jus naturels</p>
+                </div>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+      </section>
+
+      <!-- Products Section -->
+      <section class="products-section">
+        <div class="container">
+          <h2 class="section-title">Produits & Aliments en vente</h2>
+          <p class="text-center mb-5">Découvrez nos produits frais directement des fermes locales</p>
+          
+          <ion-grid>
+            <!-- Première ligne de 4 produits -->
+            <ion-row>
+              <ion-col size="12" size-sm="6" size-md="4" size-lg="3">
+                <div class="product-card small-card">
+                  <div class="product-img-container position-relative">
+                    <img src="https://images.unsplash.com/photo-1601493700631-2b16ec4b4716?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                         class="product-img" alt="Piments rouges">
+                    <span class="product-badge">-25%</span>
+                  </div>
+                  <div class="product-info">
+                    <!-- Barre de stock -->
+                    <div class="stock-progress">
+                      <div class="progress-bar" style="width: 73%"></div>
+                      <div class="stock-info">
+                        <span>127 EN STOCK</span>
+                      </div>
+                    </div>
+                    
+                    <h5 class="mb-1">Pleurotes 500 Gr</h5>
+                    <p class="text-muted small mb-2">Les pleurotes sont un choix sain car ils sont très nutritifs et faibles en calories.</p>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <div>
+                        <span class="product-price">3,750 XAF</span>
+                        <span class="product-old-price ms-2">5,000 XAF</span>
+                      </div>
+                      <div class="product-rating">
+                        <ion-icon name="star"></ion-icon>
+                        <ion-icon name="star"></ion-icon>
+                        <ion-icon name="star"></ion-icon>
+                        <ion-icon name="star-outline"></ion-icon>
+                        <ion-icon name="star-outline"></ion-icon>
+                      </div>
+                    </div>
+                    
+                    <div class="sales-info">
+                      <span class="sold">Vendu: 47</span>
+                      <span class="available">Disponible: 127</span>
+                    </div>
+                    
+                    <ion-button expand="block" color="success">Ajouter au panier</ion-button>
+                  </div>
+                </div>
+              </ion-col>
+              
+              <ion-col size="12" size-sm="6" size-md="4" size-lg="3">
+                <div class="product-card small-card">
+                  <div class="product-img-container position-relative">
+                    <img src="https://images.unsplash.com/photo-1603048719537-1db0a6d42d36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                         class="product-img" alt="Igname">
+                    <span class="product-badge">Promo</span>
+                  </div>
+                  <div class="product-info">
+                    <div class="stock-progress">
+                      <div class="progress-bar" style="width: 85%"></div>
+                      <div class="stock-info">
+                        <span>85 EN STOCK</span>
+                      </div>
+                    </div>
+                    
+                    <h5 class="mb-1">Igname blanche</h5>
+                    <p class="text-muted small mb-2">5kg - Provenance: Agriculture locale</p>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <div>
+                        <span class="product-price">4,500 XAF</span>
+                      </div>
+                      <div class="product-rating">
+                        <ion-icon name="star"></ion-icon>
+                        <ion-icon name="star"></ion-icon>
+                        <ion-icon name="star"></ion-icon>
+                        <ion-icon name="star"></ion-icon>
+                        <ion-icon name="star-outline"></ion-icon>
+                      </div>
+                    </div>
+                    
+                    <div class="sales-info">
+                      <span class="sold">Vendu: 15</span>
+                      <span class="available">Disponible: 85</span>
+                    </div>
+                    
+                    <ion-button expand="block" color="success">Ajouter au panier</ion-button>
+                  </div>
+                </div>
+              </ion-col>
+              
+              <ion-col size="12" size-sm="6" size-md="4" size-lg="3">
+                <div class="product-card small-card">
+                  <div class="product-img-container position-relative">
+                    <img src="https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1480&q=80" 
+                         class="product-img" alt="Bananes plantains">
+                  </div>
+                  <div class="product-info">
+                    <div class="stock-progress">
+                      <div class="progress-bar" style="width: 90%"></div>
+                      <div class="stock-info">
+                        <span>90 EN STOCK</span>
+                      </div>
+                    </div>
+                    
+                    <h5 class="mb-1">Bananes plantains</h5>
+                    <p class="text-muted small mb-2">10kg - Mûres à point</p>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <div>
+                        <span class="product-price">3,500 XAF</span>
+                        <span class="product-old-price ms-2">4,000 XAF</span>
+                      </div>
+                      <div class="product-rating">
+                        <ion-icon name="star"></ion-icon>
+                        <ion-icon name="star"></ion-icon>
+                        <ion-icon name="star"></ion-icon>
+                        <ion-icon name="star"></ion-icon>
+                        <ion-icon name="star"></ion-icon>
+                      </div>
+                    </div>
+                    
+                    <div class="sales-info">
+                      <span class="sold">Vendu: 10</span>
+                      <span class="available">Disponible: 90</span>
+                    </div>
+                    
+                    <ion-button expand="block" color="success">Ajouter au panier</ion-button>
+                  </div>
+                </div>
+              </ion-col>
+              
+              <ion-col size="12" size-sm="6" size-md="4" size-lg="3">
+                <div class="product-card small-card">
+                  <div class="product-img-container position-relative">
+                    <img src="https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                         class="product-img" alt="Poisson fumé">
+                    <span class="product-badge">Populaire</span>
+                  </div>
+                  <div class="product-info">
+                    <div class="stock-progress">
+                      <div class="progress-bar" style="width: 65%"></div>
+                      <div class="stock-info">
+                        <span>65 EN STOCK</span>
+                      </div>
+                    </div>
+                    
+                    <h5 class="mb-1">Poisson fumé traditionnel</h5>
+                    <p class="text-muted small mb-2">1kg - Préparé artisanalement</p>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <div>
+                        <span class="product-price">5,000 XAF</span>
+                      </div>
+                      <div class="product-rating">
+                        <ion-icon name="star"></ion-icon>
+                        <ion-icon name="star"></ion-icon>
+                        <ion-icon name="star"></ion-icon>
+                        <ion-icon name="star"></ion-icon>
+                        <ion-icon name="star-half"></ion-icon>
+                      </div>
+                    </div>
+                    
+                    <div class="sales-info">
+                      <span class="sold">Vendu: 35</span>
+                      <span class="available">Disponible: 65</span>
+                    </div>
+                    
+                    <ion-button expand="block" color="success">Ajouter au panier</ion-button>
+                  </div>
+                </div>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+          
+          <div class="text-center mt-5">
+            <ion-button color="success">Voir tous les produits</ion-button>
+          </div>
+        </div>
+      </section>
+
+     
+      
+      
+    </ion-content>
+  </ion-app>
+
+  <!-- Ionic JS -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
+</body>
+</html>

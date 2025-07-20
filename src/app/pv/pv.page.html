@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion des Produits | Agri-Gabon</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    .sidebar {
+      transition: transform 0.3s ease;
+      z-index: 50;
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        transform: translateX(-100%);
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      }
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 40;
+      }
+      .overlay.active {
+        display: block;
+      }
+    }
+    .product-card {
+      transition: all 0.3s ease;
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .stock-low {
+      background-color: #fff3cd;
+    }
+    .stock-critical {
+      background-color: #f8d7da;
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- Overlay pour mobile -->
+  <div class="overlay" id="overlay"></div>
+
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <div class="sidebar bg-white w-64 border-r border-gray-200 flex-shrink-0">
+      <div class="p-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <i class="fas fa-leaf text-2xl text-green-600"></i>
+            <h1 class="text-xl font-bold text-gray-800">Agri-Gabon</h1>
+          </div>
+          <button class="md:hidden text-gray-600" id="close-menu">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <div class="p-4">
+        <div class="mb-8">
+          <div class="flex items-center space-x-3 mb-4">
+            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+              <i class="fas fa-user text-green-600"></i>
+            </div>
+            <div>
+              <p class="font-medium">Admin</p>
+              <p class="text-xs text-gray-500">Administrateur</p>
+            </div>
+          </div>
+        </div>
+        <nav>
+          <ul class="space-y-2">
+            <li>
+              <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 text-gray-700" routerLink="/dashboard">
+                <i class="fas fa-tachometer-alt w-5"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="flex items-center space-x-3 p-2 rounded-lg bg-green-50 text-green-600" routerLink="/pv">
+                <i class="fas fa-shopping-basket w-5"></i>
+                <span>Produits</span>
+              </a>
+            </li>
+            <li>
+              <a  class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 text-gray-700" routerLink="/clients">
+                <i class="fas fa-users w-5"></i>
+                <span>Clients</span>
+              </a>
+            </li>
+            <li>
+              <a  class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 text-gray-700" routerLink="/commande">
+                <i class="fas fa-file-invoice-dollar w-5"></i>
+                <span>Commandes</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 overflow-auto">
+      <!-- Header -->
+      <header class="bg-white shadow-sm">
+        <div class="flex items-center justify-between p-4">
+          <button class="md:hidden text-gray-600" id="menu-toggle">
+            <i class="fas fa-bars text-xl"></i>
+          </button>
+          <h2 class="text-xl font-semibold text-gray-800">Gestion des Produits</h2>
+          <div class="flex items-center space-x-4">
+            <button class="text-gray-600">
+              <i class="fas fa-bell text-xl"></i>
+              <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+            </button>
+            <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+              <i class="fas fa-user text-green-600"></i>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Product Content -->
+      <main class="p-4 md:p-6">
+        <!-- Action Bar -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+          <div class="relative w-full md:w-64">
+            <input type="text" placeholder="Rechercher un produit..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-500">
+            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+          </div>
+          <div class="flex gap-3 w-full md:w-auto">
+            <select class="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+              <option>Toutes catégories</option>
+              <option>Fruits</option>
+              <option>Légumes</option>
+              <option>Viandes</option>
+              <option>Poissons</option>
+            </select>
+            <button class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg flex items-center gap-2" routerLink="/npv">
+              <i class="fas fa-plus"></i>
+              <span>Nouveau produit</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-6">
+          <!-- Product Card 1 -->
+          <div class="product-card bg-white rounded-lg shadow overflow-hidden">
+            <div class="relative h-48 bg-gray-100">
+              <img src="https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1480&q=80" 
+                   alt="Bananes plantains" class="w-full h-full object-cover">
+              <div class="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded">En stock</div>
+            </div>
+            <div class="p-4">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="font-bold text-lg">Bananes plantains</h3>
+                  <p class="text-gray-500 text-sm">Fruits</p>
+                </div>
+                <span class="text-green-600 font-bold">3,500 XAF</span>
+              </div>
+              <div class="mt-4">
+                <div class="flex justify-between text-sm mb-1">
+                  <span>Stock: 90 unités</span>
+                  <span class="text-green-600">+15% ce mois</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-green-600 h-2 rounded-full" style="width: 75%"></div>
+                </div>
+              </div>
+              <div class="mt-4 flex justify-between gap-2">
+                <button class="text-blue-600 hover:text-blue-800">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="text-red-600 hover:text-red-800">
+                  <i class="fas fa-trash"></i>
+                </button>
+                <button class="text-green-600 hover:text-green-800 ml-auto">
+                  <i class="fas fa-eye"></i> Détails
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product Card 2 -->
+          <div class="product-card bg-white rounded-lg shadow overflow-hidden stock-low">
+            <div class="relative h-48 bg-gray-100">
+              <img src="https://images.unsplash.com/photo-1603048719537-1db0a6d42d36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                   alt="Igname blanche" class="w-full h-full object-cover">
+              <div class="absolute top-2 right-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded">Stock faible</div>
+            </div>
+            <div class="p-4">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="font-bold text-lg">Igname blanche</h3>
+                  <p class="text-gray-500 text-sm">Tubercules</p>
+                </div>
+                <span class="text-green-600 font-bold">4,500 XAF</span>
+              </div>
+              <div class="mt-4">
+                <div class="flex justify-between text-sm mb-1">
+                  <span>Stock: 15 unités</span>
+                  <span class="text-green-600">+18% ce mois</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-yellow-500 h-2 rounded-full" style="width: 30%"></div>
+                </div>
+              </div>
+              <div class="mt-4 flex justify-between gap-2">
+                <button class="text-blue-600 hover:text-blue-800">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="text-red-600 hover:text-red-800">
+                  <i class="fas fa-trash"></i>
+                </button>
+                <button class="text-green-600 hover:text-green-800 ml-auto">
+                  <i class="fas fa-eye"></i> Détails
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product Card 3 -->
+          <div class="product-card bg-white rounded-lg shadow overflow-hidden">
+            <div class="relative h-48 bg-gray-100">
+              <img src="https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                   alt="Poisson fumé" class="w-full h-full object-cover">
+              <div class="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded">En stock</div>
+            </div>
+            <div class="p-4">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="font-bold text-lg">Poisson fumé</h3>
+                  <p class="text-gray-500 text-sm">Poissons</p>
+                </div>
+                <span class="text-green-600 font-bold">5,000 XAF</span>
+              </div>
+              <div class="mt-4">
+                <div class="flex justify-between text-sm mb-1">
+                  <span>Stock: 65 unités</span>
+                  <span class="text-green-600">+12% ce mois</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-green-600 h-2 rounded-full" style="width: 65%"></div>
+                </div>
+              </div>
+              <div class="mt-4 flex justify-between gap-2">
+                <button class="text-blue-600 hover:text-blue-800">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="text-red-600 hover:text-red-800">
+                  <i class="fas fa-trash"></i>
+                </button>
+                <button class="text-green-600 hover:text-green-800 ml-auto">
+                  <i class="fas fa-eye"></i> Détails
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product Card 4 -->
+          <div class="product-card bg-white rounded-lg shadow overflow-hidden stock-critical">
+            <div class="relative h-48 bg-gray-100">
+              <img src="https://images.unsplash.com/photo-1601493700631-2b16ec4b4716?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                   alt="Pleurotes" class="w-full h-full object-cover">
+              <div class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded">Stock critique</div>
+            </div>
+            <div class="p-4">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="font-bold text-lg">Pleurotes</h3>
+                  <p class="text-gray-500 text-sm">Légumes</p>
+                </div>
+                <span class="text-green-600 font-bold">3,750 XAF</span>
+              </div>
+              <div class="mt-4">
+                <div class="flex justify-between text-sm mb-1">
+                  <span>Stock: 5 unités</span>
+                  <span class="text-red-600">-10% ce mois</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-red-500 h-2 rounded-full" style="width: 10%"></div>
+                </div>
+              </div>
+              <div class="mt-4 flex justify-between gap-2">
+                <button class="text-blue-600 hover:text-blue-800">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="text-red-600 hover:text-red-800">
+                  <i class="fas fa-trash"></i>
+                </button>
+                <button class="text-green-600 hover:text-green-800 ml-auto">
+                  <i class="fas fa-eye"></i> Détails
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-between items-center mt-8">
+          <div class="text-sm text-gray-500">
+            Affichage de 1 à 4 sur 24 produits
+          </div>
+          <div class="flex gap-1">
+            <button class="px-3 py-1 border rounded text-gray-600 hover:bg-gray-100">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="px-3 py-1 border rounded bg-green-600 text-white">1</button>
+            <button class="px-3 py-1 border rounded text-gray-600 hover:bg-gray-100">2</button>
+            <button class="px-3 py-1 border rounded text-gray-600 hover:bg-gray-100">3</button>
+            <button class="px-3 py-1 border rounded text-gray-600 hover:bg-gray-100">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  
+</body>
+</html>

@@ -1,17 +1,324 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 2
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mon Panier | Marché Agricole Connecté</title>
+  <link rel="stylesheet" href="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css"/>
+  
+  <style>
+    :root {
+      --primary: #1a731e;
+      --primary-light: #4caf50;
+      --light: #f8f9fa;
+      --dark: #212529;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      background-color: #f5f5f5;
+    }
+    
+    .cart-header {
+      background: linear-gradient(to right, #1a731e, #4caf50);
+      color: white;
+      padding: 2rem 1rem;
+      text-align: center;
+    }
+    
+    .cart-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    
+    .cart-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .cart-item {
+      display: flex;
+      padding: 1rem 0;
+      border-bottom: 1px solid #eee;
+      align-items: center;
+    }
+    
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+    
+    .cart-item-img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-right: 1rem;
+    }
+    
+    .cart-item-info {
+      flex: 1;
+    }
+    
+    .cart-item-title {
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+    
+    .cart-item-price {
+      color: var(--primary);
+      font-weight: bold;
+    }
+    
+    .cart-item-old-price {
+      text-decoration: line-through;
+      color: #999;
+      font-size: 0.8rem;
+      margin-left: 0.5rem;
+    }
+    
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      margin: 0.5rem 0;
+    }
+    
+    .quantity-btn {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #ddd;
+      background: #f9f9f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    
+    .quantity-input {
+      width: 50px;
+      text-align: center;
+      border: 1px solid #ddd;
+      height: 30px;
+      margin: 0 5px;
+    }
+    
+    .remove-btn {
+      color: #dc3545;
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      margin-left: 1rem;
+    }
+    
+    .summary-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.8rem;
+    }
+    
+    .summary-total {
+      font-weight: bold;
+      font-size: 1.2rem;
+      border-top: 1px solid #eee;
+      padding-top: 0.8rem;
+      margin-top: 0.8rem;
+    }
+    
+    .empty-cart {
+      text-align: center;
+      padding: 3rem 0;
+    }
+    
+    .empty-cart-icon {
+      font-size: 5rem;
+      color: #ccc;
+      margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+      .cart-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .cart-item-img {
+        margin-bottom: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <ion-app>
+   
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 2</ion-title>
-    </ion-toolbar>
-  </ion-header>
+    <ion-content>
+      <!-- Cart Header -->
+      <div class="cart-header">
+        <h1 class="cart-title">Votre Panier</h1>
+        <p>Revoyez vos articles avant de passer commande</p>
+      </div>
+      
+      <div class="container">
+        <!-- Cart Items -->
+        <div class="cart-container">
+          <h3 style="margin-bottom: 1.5rem;">3 articles dans votre panier</h3>
+          
+          <!-- Item 1 -->
+          <div class="cart-item">
+            <img src="https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                 class="cart-item-img" alt="Mangues">
+            <div class="cart-item-info">
+              <h4 class="cart-item-title">Mangues Kent</h4>
+              <div>
+                <span class="cart-item-price">2,500 XAF</span>
+                <span class="cart-item-old-price">3,100 XAF</span>
+              </div>
+              <div class="quantity-control">
+                <button class="quantity-btn">-</button>
+                <input type="number" value="2" min="1" class="quantity-input">
+                <button class="quantity-btn">+</button>
+              </div>
+            </div>
+            <button class="remove-btn">
+              <ion-icon name="trash-outline"></ion-icon>
+            </button>
+          </div>
+          
+          <!-- Item 2 -->
+          <div class="cart-item">
+            <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" 
+                 class="cart-item-img" alt="Tomates">
+            <div class="cart-item-info">
+              <h4 class="cart-item-title">Tomates locales</h4>
+              <div>
+                <span class="cart-item-price">1,200 XAF</span>
+              </div>
+              <div class="quantity-control">
+                <button class="quantity-btn">-</button>
+                <input type="number" value="1" min="1" class="quantity-input">
+                <button class="quantity-btn">+</button>
+              </div>
+            </div>
+            <button class="remove-btn">
+              <ion-icon name="trash-outline"></ion-icon>
+            </button>
+          </div>
+          
+          <!-- Item 3 -->
+          <div class="cart-item">
+            <img src="https://images.unsplash.com/photo-1603048719537-1db0a6d42d36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                 class="cart-item-img" alt="Igname">
+            <div class="cart-item-info">
+              <h4 class="cart-item-title">Igname blanche</h4>
+              <div>
+                <span class="cart-item-price">4,500 XAF</span>
+              </div>
+              <div class="quantity-control">
+                <button class="quantity-btn">-</button>
+                <input type="number" value="1" min="1" class="quantity-input">
+                <button class="quantity-btn">+</button>
+              </div>
+            </div>
+            <button class="remove-btn">
+              <ion-icon name="trash-outline"></ion-icon>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Order Summary -->
+        <div class="summary-card">
+          <h3 style="margin-bottom: 1.5rem;">Récapitulatif de commande</h3>
+          
+          <div class="summary-row">
+            <span>Sous-total (3 articles)</span>
+            <span>8,200 XAF</span>
+          </div>
+          
+          <div class="summary-row">
+            <span>Livraison</span>
+            <span>1,500 XAF</span>
+          </div>
+          
+          <div class="summary-row">
+            <span>Remise</span>
+            <span>-1,200 XAF</span>
+          </div>
+          
+          <div class="summary-row summary-total">
+            <span>Total</span>
+            <span>8,500 XAF</span>
+          </div>
+          
+          <ion-button expand="block" color="primary" style="margin-top: 1.5rem;">
+            <ion-icon name="lock-closed" slot="start"></ion-icon>
+            Passer la commande
+          </ion-button>
+          
+          <ion-button expand="block" fill="outline" color="primary" style="margin-top: 0.5rem;">
+            Continuer mes achats
+          </ion-button>
+        </div>
+        
+        <!-- Empty Cart State (hidden) -->
+        <div class="empty-cart" style="display: none;">
+          <div class="empty-cart-icon">
+            <ion-icon name="cart-outline"></ion-icon>
+          </div>
+          <h3>Votre panier est vide</h3>
+          <p>Parcourez nos produits et ajoutez des articles à votre panier</p>
+          <ion-button color="primary" routerLink="/">
+            Découvrir nos produits
+          </ion-button>
+        </div>
+      </div>
+    </ion-content>
+  </ion-app>
 
-  <app-explore-container name="Tab 2 page"></app-explore-container>
-</ion-content>
+  <!-- Ionic JS -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
+  <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
+  
+  <script>
+    // Script simple pour gérer la quantité et la suppression
+    document.addEventListener('DOMContentLoaded', function() {
+      // Gestion des boutons de quantité
+      document.querySelectorAll('.quantity-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const input = this.parentElement.querySelector('.quantity-input');
+          let value = parseInt(input.value);
+          
+          if (this.textContent === '+') {
+            input.value = value + 1;
+          } else {
+            if (value > 1) {
+              input.value = value - 1;
+            }
+          }
+        });
+      });
+      
+      // Gestion de la suppression d'articles
+      document.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          this.closest('.cart-item').remove();
+          // Ici, vous devriez aussi mettre à jour le total
+        });
+      });
+    });
+  </script>
+</body>
+</html>

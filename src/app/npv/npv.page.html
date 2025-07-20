@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ajouter Produit - Agri-Gabon</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    .sidebar {
+      transition: transform 0.3s ease;
+      z-index: 50;
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        transform: translateX(-100%);
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      }
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 40;
+      }
+      .overlay.active {
+        display: block;
+      }
+    }
+    .card-hover {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .file-upload {
+      position: relative;
+      overflow: hidden;
+    }
+    .file-upload-input {
+      position: absolute;
+      top: 0;
+      right: 0;
+      margin: 0;
+      padding: 0;
+      font-size: 20px;
+      cursor: pointer;
+      opacity: 0;
+      filter: alpha(opacity=0);
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- Overlay pour mobile -->
+  <div class="overlay" id="overlay"></div>
+
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <div class="sidebar bg-white w-64 border-r border-gray-200 flex-shrink-0">
+      <div class="p-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <i class="fas fa-leaf text-2xl text-green-600"></i>
+            <h1 class="text-xl font-bold text-gray-800">Agri-Gabon</h1>
+          </div>
+          <button class="md:hidden text-gray-600" id="close-menu">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <div class="p-4">
+        <div class="mb-8">
+          <div class="flex items-center space-x-3 mb-4">
+            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+              <i class="fas fa-user text-green-600"></i>
+            </div>
+            <div>
+              <p class="font-medium">Admin</p>
+              <p class="text-xs text-gray-500">Administrateur</p>
+            </div>
+          </div>
+        </div>
+       <nav>
+          <ul class="space-y-2">
+            <li>
+              <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 text-gray-700" routerLink="/dashboard">
+                <i class="fas fa-tachometer-alt w-5"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="flex items-center space-x-3 p-2 rounded-lg bg-green-50 text-green-600" routerLink="/pv">
+                <i class="fas fa-shopping-basket w-5"></i>
+                <span>Produits</span>
+              </a>
+            </li>
+            <li>
+              <a  class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 text-gray-700" routerLink="/clients">
+                <i class="fas fa-users w-5"></i>
+                <span>Clients</span>
+              </a>
+            </li>
+            <li>
+              <a  class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 text-gray-700" routerLink="/commande">
+                <i class="fas fa-file-invoice-dollar w-5"></i>
+                <span>Commandes</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 overflow-auto">
+      <!-- Header -->
+      <header class="bg-white shadow-sm">
+        <div class="flex items-center justify-between p-4">
+          <button class="md:hidden text-gray-600" id="menu-toggle">
+            <i class="fas fa-bars text-xl"></i>
+          </button>
+          <h2 class="text-xl font-semibold text-gray-800">Ajouter un Produit</h2>
+          <div class="flex items-center space-x-4">
+            <div class="relative">
+              <button class="text-gray-600">
+                <i class="fas fa-bell text-xl"></i>
+                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+              </button>
+            </div>
+            <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+              <i class="fas fa-user text-green-600"></i>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Formulaire d'ajout de produit -->
+      <main class="p-4 md:p-6">
+        <div class="max-w-4xl mx-auto">
+          <div class="card-hover bg-white rounded-lg shadow overflow-hidden">
+            <!-- En-tête du formulaire -->
+            <div class="p-4 border-b border-gray-200 bg-gray-50">
+              <h3 class="font-semibold text-lg flex items-center">
+                <i class="fas fa-plus-circle text-green-600 mr-2"></i>
+                Nouveau Produit Agricole
+              </h3>
+              <p class="text-sm text-gray-500 mt-1">Remplissez tous les champs requis pour ajouter un nouveau produit</p>
+            </div>
+            
+            <!-- Corps du formulaire -->
+            <div class="p-4 md:p-6">
+              <form>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <!-- Colonne gauche -->
+                  <div>
+                    <!-- Nom du produit -->
+                    <div class="mb-4">
+                      <label for="product-name" class="block text-sm font-medium text-gray-700 mb-1">Nom du produit *</label>
+                      <input type="text" id="product-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Ex: Bananes plantains" required>
+                    </div>
+                    
+                    <!-- Catégorie -->
+                    <div class="mb-4">
+                      <label for="product-category" class="block text-sm font-medium text-gray-700 mb-1">Catégorie *</label>
+                      <select id="product-category" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
+                        <option value="">Sélectionner une catégorie</option>
+                        <option>Fruits</option>
+                        <option>Légumes</option>
+                        <option>Tubercules</option>
+                        <option>Céréales</option>
+                        <option>Produits transformés</option>
+                        <option>Autres</option>
+                      </select>
+                    </div>
+                    
+                    <!-- Prix -->
+                    <div class="mb-4">
+                      <label for="product-price" class="block text-sm font-medium text-gray-700 mb-1">Prix (XAF) *</label>
+                      <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <span class="text-gray-500">FCFA</span>
+                        </div>
+                        <input type="number" id="product-price" class="w-full pl-16 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="0.00" required>
+                      </div>
+                    </div>
+                    
+                    <!-- Unité de mesure -->
+                    <div class="mb-4">
+                      <label for="product-unit" class="block text-sm font-medium text-gray-700 mb-1">Unité de mesure *</label>
+                      <select id="product-unit" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
+                        <option value="">Sélectionner une unité</option>
+                        <option>Kilogramme (kg)</option>
+                        <option>Gramme (g)</option>
+                        <option>Litre (L)</option>
+                        <option>Pièce</option>
+                        <option>Sac</option>
+                        <option>Carton</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <!-- Colonne droite -->
+                  <div>
+                    <!-- Upload d'image -->
+                    <div class="mb-4">
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Image du produit</label>
+                      <div class="file-upload mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                        <div class="space-y-1 text-center">
+                          <div class="flex text-sm text-gray-600">
+                            <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none">
+                              <span>Téléverser une image</span>
+                              <input id="file-upload" name="file-upload" type="file" class="file-upload-input sr-only">
+                            </label>
+                            <p class="pl-1">ou glisser-déposer</p>
+                          </div>
+                          <p class="text-xs text-gray-500">
+                            PNG, JPG jusqu'à 2MB
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Quantité en stock -->
+                    <div class="mb-4">
+                      <label for="product-stock" class="block text-sm font-medium text-gray-700 mb-1">Quantité en stock</label>
+                      <input type="number" id="product-stock" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="0">
+                    </div>
+                    
+                    <!-- Produit bio -->
+                    <div class="mb-4">
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Options</label>
+                      <div class="flex items-center">
+                        <input id="organic-product" name="organic-product" type="checkbox" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                        <label for="organic-product" class="ml-2 block text-sm text-gray-700">Produit bio</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Description -->
+                <div class="mb-6">
+                  <label for="product-description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                  <textarea id="product-description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Description détaillée du produit..."></textarea>
+                </div>
+                
+                <!-- Boutons d'action -->
+                <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+                  <button type="button" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    Annuler
+                  </button>
+                  <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    <i class="fas fa-save mr-2"></i> Enregistrer le produit
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+          
+          <!-- Aide contextuelle -->
+          <div class="mt-6 card-hover bg-blue-50 rounded-lg shadow overflow-hidden">
+            <div class="p-4 border-b border-blue-200 bg-blue-100">
+              <h3 class="font-semibold text-lg flex items-center text-blue-800">
+                <i class="fas fa-info-circle mr-2"></i>
+                Conseils pour ajouter un produit
+              </h3>
+            </div>
+            <div class="p-4">
+              <ul class="list-disc pl-5 space-y-2 text-sm text-blue-700">
+                <li>Utilisez des noms de produits clairs et précis</li>
+                <li>Sélectionnez la catégorie la plus appropriée</li>
+                <li>Indiquez le prix en FCFA (Francs CFA)</li>
+                <li>Une image de qualité améliore la visibilité</li>
+                <li>Mettez à jour régulièrement les quantités en stock</li>
+                <li>Cochez "Produit bio" uniquement si certifié</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

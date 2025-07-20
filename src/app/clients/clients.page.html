@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion Clients | Agri-Gabon</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    .sidebar {
+      transition: transform 0.3s ease;
+      z-index: 50;
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        transform: translateX(-100%);
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      }
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 40;
+      }
+      .overlay.active {
+        display: block;
+      }
+    }
+    .client-card {
+      transition: all 0.3s ease;
+    }
+    .client-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .status-active {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+    .status-inactive {
+      background-color: #fee2e2;
+      color: #b91c1c;
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- Overlay pour mobile -->
+  <div class="overlay" id="overlay"></div>
+
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <div class="sidebar bg-white w-64 border-r border-gray-200 flex-shrink-0">
+      <div class="p-4 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <i class="fas fa-leaf text-2xl text-green-600"></i>
+            <h1 class="text-xl font-bold text-gray-800">Agri-Gabon</h1>
+          </div>
+          <button class="md:hidden text-gray-600" id="close-menu">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <div class="p-4">
+        <div class="mb-8">
+          <div class="flex items-center space-x-3 mb-4">
+            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+              <i class="fas fa-user text-green-600"></i>
+            </div>
+            <div>
+              <p class="font-medium">Admin</p>
+              <p class="text-xs text-gray-500">Administrateur</p>
+            </div>
+          </div>
+        </div>
+         <nav>
+          <ul class="space-y-2">
+            <li>
+              <a class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 text-gray-700" routerLink="/dashboard">
+                <i class="fas fa-tachometer-alt w-5"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+            <li>
+              <a  class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 text-gray-700" routerLink="/pv">
+                <i class="fas fa-shopping-basket w-5"></i>
+                <span>Produits</span>
+              </a>
+            </li>
+            <li>
+              <a  class="flex items-center space-x-3 p-2 rounded-lg bg-green-50 text-green-600" routerLink="/clients">
+                <i class="fas fa-users w-5"></i>
+                <span>Clients</span>
+              </a>
+            </li>
+            <li>
+              <a  class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 text-gray-700" routerLink="/commandes">
+                <i class="fas fa-file-invoice-dollar w-5"></i>
+                <span>Commandes</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 overflow-auto">
+      <!-- Header -->
+      <header class="bg-white shadow-sm">
+        <div class="flex items-center justify-between p-4">
+          <button class="md:hidden text-gray-600" id="menu-toggle">
+            <i class="fas fa-bars text-xl"></i>
+          </button>
+          <h2 class="text-xl font-semibold text-gray-800">Gestion des Clients</h2>
+          <div class="flex items-center space-x-4">
+            <button class="text-gray-600">
+              <i class="fas fa-bell text-xl"></i>
+              <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">2</span>
+            </button>
+            <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+              <i class="fas fa-user text-green-600"></i>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Client Content -->
+      <main class="p-4 md:p-6">
+        <!-- Action Bar -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+          <div class="relative w-full md:w-64">
+            <input type="text" placeholder="Rechercher un client..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-500">
+            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+          </div>
+          <div class="flex gap-3 w-full md:w-auto">
+            <select class="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+              <option>Tous les clients</option>
+              <option>Actifs</option>
+              <option>Inactifs</option>
+              <option>Entreprises</option>
+              <option>Particuliers</option>
+            </select>
+            
+          </div>
+        </div>
+
+        <!-- Clients Table -->
+        <div class="bg-white rounded-lg shadow overflow-hidden mb-6">
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Commandes</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dépenses</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <!-- Client 1 -->
+                <tr class="client-card hover:bg-gray-50">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                        <i class="fas fa-user text-blue-600"></i>
+                      </div>
+                      <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900">Jean Ndong</div>
+                        <div class="text-sm text-gray-500">Particulier</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">jean.ndong&#64;example.com</div>
+                    <div class="text-sm text-gray-500">+241 01 23 45 67</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">12</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-green-600">125,500 XAF</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 py-1 text-xs rounded-full status-active">Actif</span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <div class="flex gap-2">
+                      <button class="text-blue-600 hover:text-blue-900">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="text-green-600 hover:text-green-900">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <button class="text-red-600 hover:text-red-900">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Client 2 -->
+                <tr class="client-card hover:bg-gray-50">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
+                        <i class="fas fa-building text-purple-600"></i>
+                      </div>
+                      <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900">SuperMarché Gabon</div>
+                        <div class="text-sm text-gray-500">Entreprise</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">contact&#64;supermarche-ga.com</div>
+                    <div class="text-sm text-gray-500">+241 01 34 56 78</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">24</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-green-600">325,750 XAF</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 py-1 text-xs rounded-full status-active">Actif</span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <div class="flex gap-2">
+                      <button class="text-blue-600 hover:text-blue-900">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="text-green-600 hover:text-green-900">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <button class="text-red-600 hover:text-red-900">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Client 3 -->
+                <tr class="client-card hover:bg-gray-50">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                        <i class="fas fa-user text-blue-600"></i>
+                      </div>
+                      <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900">Marie Mba</div>
+                        <div class="text-sm text-gray-500">Particulier</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">marie.mba&#64;example.com</div>
+                    <div class="text-sm text-gray-500">+241 02 45 67 89</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">5</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-green-600">45,250 XAF</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 py-1 text-xs rounded-full status-inactive">Inactif</span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <div class="flex gap-2">
+                      <button class="text-blue-600 hover:text-blue-900">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="text-green-600 hover:text-green-900">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <button class="text-red-600 hover:text-red-900">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Client 4 -->
+                <tr class="client-card hover:bg-gray-50">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
+                        <i class="fas fa-building text-purple-600"></i>
+                      </div>
+                      <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-900">Restaurant Le Bon Goût</div>
+                        <div class="text-sm text-gray-500">Entreprise</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">contact&#64;bon-gout.ga</div>
+                    <div class="text-sm text-gray-500">+241 03 56 78 90</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">18</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-green-600">215,000 XAF</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 py-1 text-xs rounded-full status-active">Actif</span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <div class="flex gap-2">
+                      <button class="text-blue-600 hover:text-blue-900">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="text-green-600 hover:text-green-900">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <button class="text-red-600 hover:text-red-900">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-between items-center">
+          <div class="text-sm text-gray-500">
+            Affichage de 1 à 4 sur 42 clients
+          </div>
+          <div class="flex gap-1">
+            <button class="px-3 py-1 border rounded text-gray-600 hover:bg-gray-100">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="px-3 py-1 border rounded bg-green-600 text-white">1</button>
+            <button class="px-3 py-1 border rounded text-gray-600 hover:bg-gray-100">2</button>
+            <button class="px-3 py-1 border rounded text-gray-600 hover:bg-gray-100">3</button>
+            <button class="px-3 py-1 border rounded text-gray-600 hover:bg-gray-100">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Client Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+          <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-500 text-sm">Clients actifs</p>
+                <h3 class="text-2xl font-bold mt-1">36</h3>
+                <p class="text-green-500 text-sm mt-2">
+                  <i class="fas fa-arrow-up mr-1"></i> 8% ce mois
+                </p>
+              </div>
+              <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                <i class="fas fa-user-check text-green-600 text-xl"></i>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-500 text-sm">Nouveaux clients</p>
+                <h3 class="text-2xl font-bold mt-1">5</h3>
+                <p class="text-green-500 text-sm mt-2">
+                  <i class="fas fa-arrow-up mr-1"></i> 12% ce mois
+                </p>
+              </div>
+              <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                <i class="fas fa-user-plus text-blue-600 text-xl"></i>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-500 text-sm">Clients inactifs</p>
+                <h3 class="text-2xl font-bold mt-1">6</h3>
+                <p class="text-red-500 text-sm mt-2">
+                  <i class="fas fa-arrow-down mr-1"></i> 3% ce mois
+                </p>
+              </div>
+              <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+                <i class="fas fa-user-slash text-red-600 text-xl"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+ 
+</body>
+</html>

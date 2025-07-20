@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tableau de Bord | Marché Agricole Connecté</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #1a731e;
+      --primary-dark: #145c18;
+      --light: #f8f9fa;
+      --dark: #212529;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fa;
+    }
+    
+    .sidebar {
+      transition: all 0.3s ease;
+    }
+    
+    .card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .progress-bar {
+      height: 6px;
+      border-radius: 3px;
+    }
+    
+    .chart-container {
+      height: 300px;
+    }
+    
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        position: absolute;
+        z-index: 1000;
+      }
+      
+      .sidebar.active {
+        transform: translateX(0);
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <div class="sidebar bg-white w-64 flex-shrink-0 shadow-lg md:shadow-none md:translate-x-0">
+      <div class="p-4 border-b border-gray-200">
+        <div class="flex items-center space-x-3">
+          <i class="fas fa-leaf text-2xl text-green-600"></i>
+          <h1 class="text-xl font-bold text-gray-800">Agri-Gabon</h1>
+        </div>
+      </div>
+      
+      <div class="p-4">
+        <div class="mb-8">
+          <div class="flex items-center space-x-3 mb-4">
+            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+              <i class="fas fa-user text-green-600"></i>
+            </div>
+            <div>
+              <p class="font-medium">John Doe</p>
+              <p class="text-xs text-gray-500">Administrateur</p>
+            </div>
+          </div>
+        </div>
+        
+        <nav>
+          <ul class="space-y-2">
+            <li>
+              <a href="#" class="flex items-center space-x-3 p-2 rounded-lg bg-green-50 text-green-600">
+                <i class="fas fa-tachometer-alt w-5 text-center"></i>
+                <span>Tableau de bord</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 text-gray-700">
+                <i class="fas fa-shopping-basket w-5 text-center"></i>
+                <span>Produits</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 text-gray-700">
+                <i class="fas fa-users w-5 text-center"></i>
+                <span>Clients</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 text-gray-700">
+                <i class="fas fa-user-tie w-5 text-center"></i>
+                <span>Fournisseurs</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 text-gray-700">
+                <i class="fas fa-file-invoice-dollar w-5 text-center"></i>
+                <span>Commandes</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 text-gray-700">
+                <i class="fas fa-chart-line w-5 text-center"></i>
+                <span>Statistiques</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 text-gray-700">
+                <i class="fas fa-cog w-5 text-center"></i>
+                <span>Paramètres</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="flex-1 overflow-auto">
+      <!-- Header -->
+      <header class="bg-white shadow-sm">
+        <div class="flex items-center justify-between p-4">
+          <div class="flex items-center space-x-4">
+            <button class="md:hidden text-gray-600" id="menu-toggle">
+              <i class="fas fa-bars text-xl"></i>
+            </button>
+            <h2 class="text-xl font-semibold text-gray-800">Tableau de bord</h2>
+          </div>
+          
+          <div class="flex items-center space-x-4">
+            <div class="relative">
+              <input type="text" placeholder="Rechercher..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+              <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+            </div>
+            
+            <div class="relative">
+              <button class="text-gray-600">
+                <i class="fas fa-bell text-xl"></i>
+                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+              </button>
+            </div>
+            
+            <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+              <i class="fas fa-user text-green-600"></i>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Dashboard Content -->
+      <main class="p-4 md:p-6">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          <div class="card bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-500 text-sm">Commandes</p>
+                <h3 class="text-2xl font-bold mt-1">1,257</h3>
+                <p class="text-green-500 text-sm mt-2 flex items-center">
+                  <i class="fas fa-arrow-up mr-1"></i> 12% ce mois
+                </p>
+              </div>
+              <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                <i class="fas fa-shopping-cart text-green-600 text-xl"></i>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-500 text-sm">Revenus</p>
+                <h3 class="text-2xl font-bold mt-1">4,250,000 XAF</h3>
+                <p class="text-green-500 text-sm mt-2 flex items-center">
+                  <i class="fas fa-arrow-up mr-1"></i> 8% ce mois
+                </p>
+              </div>
+              <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                <i class="fas fa-wallet text-blue-600 text-xl"></i>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-500 text-sm">Produits</p>
+                <h3 class="text-2xl font-bold mt-1">342</h3>
+                <p class="text-red-500 text-sm mt-2 flex items-center">
+                  <i class="fas fa-arrow-down mr-1"></i> 3% ce mois
+                </p>
+              </div>
+              <div class="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
+                <i class="fas fa-box-open text-yellow-600 text-xl"></i>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card bg-white rounded-lg shadow p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-500 text-sm">Clients</p>
+                <h3 class="text-2xl font-bold mt-1">1,028</h3>
+                <p class="text-green-500 text-sm mt-2 flex items-center">
+                  <i class="fas fa-arrow-up mr-1"></i> 5% ce mois
+                </p>
+              </div>
+              <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+                <i class="fas fa-users text-purple-600 text-xl"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          <!-- Sales Chart -->
+          <div class="card bg-white rounded-lg shadow p-6 lg:col-span-2">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-semibold text-lg">Ventes mensuelles</h3>
+              <select class="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                <option>Ce mois</option>
+                <option>Le mois dernier</option>
+                <option>Cette année</option>
+              </select>
+            </div>
+            <div class="chart-container">
+              <canvas id="salesChart"></canvas>
+            </div>
+          </div>
+          
+          <!-- Top Products -->
+          <div class="card bg-white rounded-lg shadow p-6">
+            <h3 class="font-semibold text-lg mb-4">Produits populaires</h3>
+            <div class="space-y-4">
+              <div class="flex items-center">
+                <div class="w-10 h-10 rounded overflow-hidden mr-3">
+                  <img src="https://images.unsplash.com/photo-1601493700631-2b16ec4b4716?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                       class="w-full h-full object-cover" alt="Pleurotes">
+                </div>
+                <div class="flex-1">
+                  <p class="font-medium">Pleurotes</p>
+                  <div class="flex items-center text-sm text-gray-500">
+                    <span>127 vendus</span>
+                    <span class="mx-2">•</span>
+                    <span class="text-green-600">+25%</span>
+                  </div>
+                </div>
+                <div class="text-green-600 font-medium">3,750 XAF</div>
+              </div>
+              
+              <div class="flex items-center">
+                <div class="w-10 h-10 rounded overflow-hidden mr-3">
+                  <img src="https://images.unsplash.com/photo-1603048719537-1db0a6d42d36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                       class="w-full h-full object-cover" alt="Igname">
+                </div>
+                <div class="flex-1">
+                  <p class="font-medium">Igname blanche</p>
+                  <div class="flex items-center text-sm text-gray-500">
+                    <span>85 vendus</span>
+                    <span class="mx-2">•</span>
+                    <span class="text-green-600">+18%</span>
+                  </div>
+                </div>
+                <div class="text-green-600 font-medium">4,500 XAF</div>
+              </div>
+              
+              <div class="flex items-center">
+                <div class="w-10 h-10 rounded overflow-hidden mr-3">
+                  <img src="https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1480&q=80" 
+                       class="w-full h-full object-cover" alt="Bananes">
+                </div>
+                <div class="flex-1">
+                  <p class="font-medium">Bananes plantains</p>
+                  <div class="flex items-center text-sm text-gray-500">
+                    <span>90 vendus</span>
+                    <span class="mx-2">•</span>
+                    <span class="text-green-600">+15%</span>
+                  </div>
+                </div>
+                <div class="text-green-600 font-medium">3,500 XAF</div>
+              </div>
+              
+              <div class="flex items-center">
+                <div class="w-10 h-10 rounded overflow-hidden mr-3">
+                  <img src="https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                       class="w-full h-full object-cover" alt="Poisson">
+                </div>
+                <div class="flex-1">
+                  <p class="font-medium">Poisson fumé</p>
+                  <div class="flex items-center text-sm text-gray-500">
+                    <span>65 vendus</span>
+                    <span class="mx-2">•</span>
+                    <span class="text-green-600">+12%</span>
+                  </div>
+                </div>
+                <div class="text-green-600 font-medium">5,000 XAF</div>
+              </div>
+              
+              <div class="flex items-center">
+                <div class="w-10 h-10 rounded overflow-hidden mr-3">
+                  <img src="https://images.unsplash.com/photo-1601493700631-2b16ec4b4716?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                       class="w-full h-full object-cover" alt="Piments">
+                </div>
+                <div class="flex-1">
+                  <p class="font-medium">Piments rouges</p>
+                  <div class="flex items-center text-sm text-gray-500">
+                    <span>58 vendus</span>
+                    <span class="mx-2">•</span>
+                    <span class="text-green-600">+8%</span>
+                  </div>
+                </div>
+                <div class="text-green-600 font-medium">2,500 XAF</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Recent Orders & Activity -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Recent Orders -->
+          <div class="card bg-white rounded-lg shadow p-6 lg:col-span-2">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-semibold text-lg">Commandes récentes</h3>
+              <a href="#" class="text-sm text-green-600 hover:underline">Voir tout</a>
+            </div>
+            
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead>
+                  <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">N° Commande</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">#AG-2548</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">Marie Nkoghe</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">12/06/2023</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">15,750 XAF</td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                      <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">Livré</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">#AG-2547</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">Jean Mba</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">11/06/2023</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">12,500 XAF</td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                      <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">En cours</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">#AG-2546</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">Sarah Ondo</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">10/06/2023</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">8,250 XAF</td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                      <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">Expédié</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">#AG-2545</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">Paul Bongo</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">09/06/2023</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">20,000 XAF</td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                      <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">Livré</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">#AG-2544</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">Lucie Meye</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">08/06/2023</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">7,500 XAF</td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                      <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">Annulé</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <!-- Recent Activity -->
+          <div class="card bg-white rounded-lg shadow p-6">
+            <h3 class="font-semibold text-lg mb-4">Activité récente</h3>
+            
+            <div class="space-y-4">
+              <div class="flex items-start">
+                <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mr-3">
+                  <i class="fas fa-shopping-cart text-green-600"></i>
+                </div>
+                <div>
+                  <p class="font-medium">Nouvelle commande</p>
+                  <p class="text-sm text-gray-500">Commande #AG-2549 de 18,500 XAF</p>
+                  <p class="text-xs text-gray-400 mt-1">Il y a 15 minutes</p>
+                </div>
+              </div>
+              
+              <div class="flex items-start">
+                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mr-3">
+                  <i class="fas fa-user text-blue-600"></i>
+                </div>
+                <div>
+                  <p class="font-medium">Nouveau client</p>
+                  <p class="text-sm text-gray-500">Daniel Nzamba s'est inscrit</p>
+                  <p class="text-xs text-gray-400 mt-1">Il y a 1 heure</p>
+                </div>
+              </div>
+              
+              <div class="flex items-start">
+                <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0 mr-3">
+                  <i class="fas fa-box-open text-yellow-600"></i>
+                </div>
+                <div>
+                  <p class="font-medium">Stock mis à jour</p>
+                  <p class="text-sm text-gray-500">Igname blanche - 50 unités ajoutées</p>
+                  <p class="text-xs text-gray-400 mt-1">Il y a 3 heures</p>
+                </div>
+              </div>
+              
+              <div class="flex items-start">
+                <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 mr-3">
+                  <i class="fas fa-truck text-purple-600"></i>
+                </div>
+                <div>
+                  <p class="font-medium">Livraison effectuée</p>
+                  <p class="text-sm text-gray-500">Commande #AG-2547 livrée</p>
+                  <p class="text-xs text-gray-400 mt-1">Il y a 5 heures</p>
+                </div>
+              </div>
+              
+              <div class="flex items-start">
+                <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 mr-3">
+                  <i class="fas fa-exclamation-triangle text-red-600"></i>
+                </div>
+                <div>
+                  <p class="font-medium">Stock faible</p>
+                  <p class="text-sm text-gray-500">Pleurotes - Seulement 15 unités restantes</p>
+                  <p class="text-xs text-gray-400 mt-1">Il y a 1 jour</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <script>
+    // Toggle mobile menu
+    document.getElementById('menu-toggle').addEventListener('click', function() {
+      document.querySelector('.sidebar').classList.toggle('active');
+    });
+    
+    // Initialize charts
+    document.addEventListener('DOMContentLoaded', function() {
+      // Sales Chart
+      const salesCtx = document.getElementById('salesChart').getContext('2d');
+      const salesChart = new Chart(salesCtx, {
+        type: 'line',
+        data: {
+          labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
+          datasets: [{
+            label: 'Ventes (en XAF)',
+            data: [1200000, 1900000, 1500000, 2100000, 1800000, 2500000, 2200000, 2300000, 2800000, 2600000, 3000000, 4250000],
+            backgroundColor: 'rgba(26, 115, 30, 0.1)',
+            borderColor: 'rgba(26, 115, 30, 1)',
+            borderWidth: 2,
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value) {
+                  return value.toLocaleString() + ' XAF';
+                }
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.parsed.y.toLocaleString() + ' XAF';
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
